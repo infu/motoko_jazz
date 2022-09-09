@@ -37,3 +37,6 @@ Execute a function up to 3 times with 5 seconds interval (retrying gets cancelle
       false;
     });
 ```
+
+
+License MIT
