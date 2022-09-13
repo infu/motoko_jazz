@@ -17,15 +17,23 @@ module {
         };
       };
 
-      
   };
 
 
-  public class init<>() {
+  public class Jazz<>() {
     // Mem
     let max_callbacks = 10000;
     let cbs : [var ?Callback] = Array.init<?Callback>(max_callbacks, null);
     var nextIdx:Nat = 0;
+
+    public var mockTime: ?Time.Time = null; // in seconds
+
+    private func getTime() : Time.Time {
+        switch(mockTime) {
+            case (?t) t*1000000000;
+            case (null) Time.now();
+        };
+    };
 
     // Public
     public func heartbeat() : async () {
@@ -35,14 +43,14 @@ module {
     // Operators
     public func delay(sec : Nat, fn : () -> () ) :  () {
        add(#delay({
-        time = Time.now() + 1000000000 * sec;
+        time = getTime() + 1000000000 * sec;
         fn = #seq(fn);
         }));
     };
 
     public func delay_async(sec : Nat, fn : () -> async () ) :  () {
        add(#delay({
-        time = Time.now() + 1000000000 * sec;
+        time = getTime() + 1000000000 * sec;
         fn = #asy(fn);
         }));
     };
@@ -63,7 +71,6 @@ module {
        };
 
        await delayfn();
-     
     };
 
     // Internal
@@ -74,7 +81,7 @@ module {
     };
 
     private func run_next_callback() : async () {
-        var now = Time.now();
+        var now = getTime();
 
         var i:Nat = 0;
         while(i < max_callbacks) {
@@ -115,6 +122,7 @@ module {
         };
         return i;
       };
+      
     };
 
   
